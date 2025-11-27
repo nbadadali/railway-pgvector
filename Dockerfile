@@ -11,10 +11,6 @@ ENV POSTGRES_PASSWORD=vectordb
 # Use subdirectory under the mount point for PGDATA
 ENV PGDATA=/var/lib/postgresql/data/pgdata
 
-# IMPORTANT: Make Postgres listen on all interfaces (IPv4 + IPv6)
-# This is required for Railway internal networking over IPv6.
-RUN echo "listen_addresses='*'" >> /usr/local/share/postgresql/postgresql.conf.sample
-
 # Copy init script so Postgres runs it on first startup
 COPY init-db.sql /docker-entrypoint-initdb.d/
 
