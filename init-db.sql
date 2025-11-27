@@ -1,4 +1,5 @@
--- init-db.sql
+-- Make Postgres listen on all interfaces (IPv4 + IPv6)
+ALTER SYSTEM SET listen_addresses TO '*';
 
 -- Create schema for your app
 CREATE SCHEMA IF NOT EXISTS app;
