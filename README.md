@@ -1,21 +1,42 @@
-# Standalone `pgvector` Service
+# pgvector on Railway
 
-This template deploys a Postgres instance with `pgvector`, an extension which turns your normal Postgres database into a vector database.
+This repo runs **Postgres + pgvector** as a Railway service using the official `pgvector/pgvector` image.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/uYYYQy?referralCode=h4Sp39)
+It is meant to be used as a dedicated **vector database** for things like embeddings and semantic search.
 
-## ✨ Features
+## 1. Deploy to Railway
 
-- Everything of a normal Postgres database.
-- Goodies of a vector database made by a mature ecosystem.
+1. Push this repo to GitHub (e.g. `yourname/pgvector-on-railway`).
+2. In Railway:
+   - Open your existing project (the one with n8n + memory-api).
+   - Click **New → Service → Deploy from GitHub**.
+   - Select this repo.
+3. Wait for Railway to build and start the container.
 
-## 💁‍♀️ How to use
+This will spin up a Postgres server with the `vector` extension available.
 
-- Click the Railway button.
-- Add the required environment variables.
-- Deploy.
+On **first startup**, `init-db.sql` will run and create:
 
-## 📝 Notes
+- `app` schema  
+- `pgvector` extension  
+- `app.documents` table with a `vector(384)` column and indexes.
 
-- `pgvector`: https://github.com/pgvector/pgvector
-- `PostgreSQL`: https://www.postgresql.org/docs/
+## 2. Configure environment variables
+
+Go to the new service in Railway → **Variables** and set at least:
+
+- `POSTGRES_DB` – e.g. `vector_db`
+- `POSTGRES_USER` – e.g. `vector_user`
+- `POSTGRES_PASSWORD` – strong password
+
+These are used by the Postgres image to create the initial database and superuser.
+
+### 2.1 Create a DATABASE_URL for other services
+
+Still in the same service (`pgvector`), add a variable:
+
+- **Name:** `DATABASE_URL`  
+- **Value:**
+
+  ```text
+  postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${RAILWAY_PRIVATE_DOMAIN}:5432/${POSTGRES_DB}
