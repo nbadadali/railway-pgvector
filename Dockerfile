@@ -1,9 +1,18 @@
-FROM ankane/pgvector:v0.4.4
+# Dockerfile
+# Postgres with pgvector enabled
 
-ARG POSTGRES_PASSWORD POSTGRES_USER POSTGRES_DB
+FROM pgvector/pgvector:pg17
 
-ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-ENV POSTGRES_USER=$POSTGRES_USER
-ENV POSTGRES_DB=$POSTGRES_DB
+# Optional: set a default DB name (can be overridden by env vars in Railway)
+ENV POSTGRES_DB=vectordb
+ENV POSTGRES_USER=vectordb
+ENV POSTGRES_PASSWORD=vectordb
 
-COPY ./add-vector-extension.sql /docker-entrypoint-initdb.d/
+# Copy init script so Postgres runs it on first startup
+# This will create schema, extension, and tables when the DB is first initialized.
+COPY init-db.sql /docker-entrypoint-initdb.d/
+
+# Expose Postgres default port (Railway will map it via TCP proxy or internal network)
+EXPOSE 5432
+
+# Use the default Postgres entrypoint + CMD from the base image
